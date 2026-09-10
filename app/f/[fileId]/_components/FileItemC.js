@@ -1,9 +1,27 @@
 import { Download } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
+import { hashPasswordIfNeeded } from './../../../_utils/security'
 
 function FileItemC({file}) {
     const [password,setPassword]=useState('');
+    const [passwordHash,setPasswordHash]=useState('');
+    const requiresPassword = (file?.password?.length ?? 0) > 0;
+
+    const onPasswordChange = async (value) => {
+      setPassword(value);
+      // Compare hashes so plaintext passwords never grant access via DevTools
+      // alone. Legacy rows may still hold plaintext — accept either during
+      // migration, new saves are always SHA-256 (see file-preview onPasswordSave).
+      setPasswordHash(await hashPasswordIfNeeded(value));
+    };
+
+    const isUnlocked = !requiresPassword || (
+      password.length > 0 && (
+        passwordHash === file.password?.toLowerCase() ||
+        password === file.password
+      )
+    );
   return file&&(
     <div>
       <div className='p-5 rounded-md bg-white flex flex-col items-center'>
@@ -22,10 +40,10 @@ function FileItemC({file}) {
               {file.fileName} ⚡ {file.fileType}  ⚡ {(file.fileSize/1024/1024).toFixed(2)} MB</h2>
         </div>
 
-        {file.password.length>3? <input type='password' 
+        {requiresPassword ? <input type='password' 
           className='p-2 border rounded-md text-[14px] mt-5
           text-center  outline-blue-400' 
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e)=>onPasswordChange(e.target.value)}
           placeholder='Enter password to access '/>:null}
           
           <button href={null} className='flex gap-2 p-2
@@ -34,7 +52,7 @@ function FileItemC({file}) {
             text-[14px] mt-5 text-center  justify-center
             disabled:bg-gray-300' 
             onClick={()=>window.open(file?.fileUrl)}
-            disabled={file.password!==password}>
+            disabled={!isUnlocked}>
               <Download className='h-4 w-4' /> Download</button>
           <h2 className='text-gray-400 text-[12px]'>*Term and Condition apply</h2>
 

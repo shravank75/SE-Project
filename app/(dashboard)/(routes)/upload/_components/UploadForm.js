@@ -3,6 +3,7 @@ import AlertMsg from './AlertMsg';
 import FilePreview from './FilePreview';
 import ProgressBar from './ProgressBar';
 import SuccessAlert from './SuccessAlert';
+import { isBlockedFile, MAX_FILE_SIZE } from './../../../../_utils/security';
 
 function UploadForm({ uploadBtnClick }) {
   const [file, setFile] = useState();
@@ -11,8 +12,12 @@ function UploadForm({ uploadBtnClick }) {
   const [progress, setProgress] = useState(0);
 
   const onFileSelect = (file) => {
-    if (file && file.size > 100 * 1024 * 1024) {
+    if (file && file.size > MAX_FILE_SIZE) {
       setErrorMsg('Maximum File Upload size is 100MB');
+      return;
+    }
+    if (file && isBlockedFile(file.name)) {
+      setErrorMsg('This file type is blocked for security reasons');
       return;
     }
     setErrorMsg(null);

@@ -3,17 +3,24 @@
 import { Copy } from 'lucide-react'
 import React, { useState } from 'react'
 import GlobalApi from './../../../../../_utils/GlobalApi'
+import { isValidEmail } from './../../../../../_utils/security'
 import { useUser } from '@clerk/nextjs'
 
 function FileShareForm({ file, onPasswordSave }) {
   const [isPasswordEnable, setIsEnablePassword] = useState(false)
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
   const { user } = useUser()
 
   const sendEmail = () => {
+    if (!isValidEmail(email)) {
+      setEmailError('Enter a valid email address')
+      return
+    }
+    setEmailError('')
     const data = {
-      emailToSend: email,
+      emailToSend: email.trim(),
       userName: user?.fullName,
       fileName: file.fileName,
       fileSize: file.fileSize,
@@ -67,14 +74,14 @@ function FileShareForm({ file, onPasswordSave }) {
           <div className="border rounded-md w-full p-2">
             <input
               type="password"
-              defaultValue={file.password}
+              placeholder="Set a password (min 4 chars, stored as hash)"
               className="bg-transparent outline-none w-full"
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button
             className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300"
-            disabled={password.length < 3}
+            disabled={password.length < 4}
             onClick={() => onPasswordSave(password)}
           >
             Save
@@ -93,6 +100,7 @@ function FileShareForm({ file, onPasswordSave }) {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+        {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
         <button
           className="p-2 bg-blue-500 text-white w-full mt-2 rounded-md hover:bg-blue-600 disabled:bg-gray-300"
           disabled={email.length < 3}

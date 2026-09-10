@@ -4,6 +4,7 @@ import UploadForm from './_components/UploadForm'
 import { Storage, ID, Permission, Databases, Client } from 'appwrite'
 import { useUser } from '@clerk/nextjs'
 import { generateRandomString } from './../../../_utils/GenerateRandomString'
+import { isBlockedFile, MAX_FILE_SIZE } from './../../../_utils/security'
 import CompleteCheck from './_components/CompleteCheck'
 import { useRouter } from 'next/navigation'
 
@@ -12,20 +13,30 @@ function Upload() {
   const [progress, setProgress] = useState(0)
   const [fileDocId, setFileDocId] = useState('')
   const [uploadCompleted, setUploadCompleted] = useState(false)
-  const [fileUrl, setFileUrl] = useState('')
+  const [_fileUrl, setFileUrl] = useState('')
 
   const router = useRouter()
 
   // Initialize Appwrite Client
   const client = new Client()
-    .setEndpoint('https://nyc.cloud.appwrite.io/v1')
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? 'https://nyc.cloud.appwrite.io/v1')
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? '')
 
   const storage = new Storage(client)
   const databases = new Databases(client)
 
   const uploadFile = async (file) => {
     if (!file) return
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert('Maximum file upload size is 100MB.')
+      return
+    }
+
+    if (isBlockedFile(file.name)) {
+      alert('This file type is blocked for security reasons.')
+      return
+    }
 
     setProgress(0)
     setUploadCompleted(false)
@@ -73,6 +84,7 @@ function Upload() {
 
   const saveInfo = async (file, fileUrl) => {
     const docId = generateRandomString().toString()
+    const shortBase = process.env.NEXT_PUBLIC_SHORT_URL ?? '/f/'
     await databases.createDocument(
       process.env.NEXT_PUBLIC_DB_ID,
       process.env.NEXT_PUBLIC_COLLECTION_ID,
@@ -86,7 +98,7 @@ function Upload() {
         userName: user?.fullName || '',
         password: '',
         id: docId,
-        shortUrl: process.env.NEXT_PUBLIC_SHORT_URL + docId,
+        shortUrl: shortBase + docId,
       }
     )
     setFileDocId(docId)

@@ -4,7 +4,7 @@ import SideNav from './_components/SideNav'
 import TopHeader from './_components/TopHeader'
 import Toast from '../_components/Toast';
 
-function layout({ children }) {
+function Layout({ children }) {
   const [toggle, setToggle] = useState(false);
   
   return (
@@ -32,4 +32,4 @@ function layout({ children }) {
   )
 }
 
-export default layout
+export default Layout

@@ -31,7 +31,7 @@ function SideNav({closeSideBar}) {
   return (
     <div className='shadow-sm border-r border-gray-100 h-full'>
         <div className='p-5 border-b border-gray-100'>
-            <Link href={process.env.NEXT_PUBLIC_DOMAIN}>
+            <Link href={process.env.NEXT_PUBLIC_DOMAIN ?? '/'}>
             <Image src='/logo.svg' width={150}
             height={100} alt='logo'/>
             </Link>

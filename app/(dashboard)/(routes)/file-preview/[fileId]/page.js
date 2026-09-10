@@ -6,10 +6,11 @@ import FileInfo from './_components/FileInfo'
 import FileShareForm from './_components/FileShareForm'
 import { use } from 'react'
 import { Client, Databases, ID } from 'appwrite'
+import { hashPasswordIfNeeded } from './../../../../_utils/security'
 
 const client = new Client()
-  .setEndpoint('https://nyc.cloud.appwrite.io/v1')
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? 'https://nyc.cloud.appwrite.io/v1')
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? '')
 
 const databases = new Databases(client)
 
@@ -38,15 +39,16 @@ function FilePreview({ params }) {
 
   const onPasswordSave = async (password) => {
     try {
+      const hashed = await hashPasswordIfNeeded(password)
       await databases.updateDocument(
         process.env.NEXT_PUBLIC_DB_ID,
         process.env.NEXT_PUBLIC_COLLECTION_ID,
         fileId,
         {
-          password: password,
+          password: hashed,
         }
       )
-      setFile((prev) => ({ ...prev, password }))
+      setFile((prev) => ({ ...prev, password: hashed }))
     } catch (err) {
       console.error('Failed to save password', err)
     }

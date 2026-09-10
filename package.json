@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev --experimental-https",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.35.3",
@@ -15,26 +15,33 @@
     "@react-email/components": "0.4.0",
     "appwrite": "^18.1.1",
     "axios": "^1.11.0",
-    "firebase": "^12.0.0",
     "lucide-react": "^0.525.0",
     "next": "15.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "resend": "^4.7.0",
-    "swr": "^2.3.4"
+    "resend": "^4.7.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.18.0",
     "@tailwindcss/postcss": "^4",
     "@types/react": "19.1.9",
     "autoprefixer": "^10.4.21",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "15.4.1",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^15.14.0",
     "postcss": "^8.5.6",
     "react-email": "4.2.7",
     "tailwindcss": "^4.1.11",
     "typescript": "5.9.2"
   },
-  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
+  "description": "Secure file sharing web app (Next.js + Clerk + Appwrite + Resend). Upload files, protect with password, share via short link/email.",
   "main": "index.js",
-  "keywords": [],
+  "keywords": ["nextjs", "file-sharing", "clerk", "appwrite", "secure"],
   "author": "",
-  "license": "ISC"
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  }
 }

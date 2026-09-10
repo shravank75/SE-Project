@@ -1,14 +1,11 @@
 # Use an official Node.js runtime as the base image
 FROM node:20-alpine AS base
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Install dependencies first (better layer caching)
 COPY package*.json ./
-
-# Install dependencies
-RUN npm install --production=false
+RUN npm ci --no-audit --no-fund
 
 # Copy rest of the app
 COPY . .
@@ -16,8 +13,9 @@ COPY . .
 # Build the Next.js app
 RUN npm run build
 
-# Expose port
-EXPOSE 80
+EXPOSE 3000
+ENV NODE_ENV=production
+ENV PORT=3000
 
-# Start the app
-CMD ["npm", "run", "dev"]
+# Start the production server (not dev)
+CMD ["npm", "start"]

@@ -124,10 +124,6 @@ const main = {
     fontSize: 16,
   };
   
-  const logo = {
-    padding: '30px 20px',
-  };
-  
   const containerButton = {
     display: 'flex',
     justifyContent: 'center',
@@ -148,10 +144,6 @@ const main = {
     border: '1px solid rgb(0,0,0, 0.1)',
     borderRadius: '3px',
     overflow: 'hidden',
-  };
-  
-  const boxInfos = {
-    padding: '20px 40px',
   };
   
   const containerImageFooter = {

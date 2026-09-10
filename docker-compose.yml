@@ -1,16 +1,12 @@
-version: '3.9'
-
 services:
   web:
     container_name: nextjs-app
     build: .
     ports:
-      - "80:80"
+      - "3000:3000"
+    env_file:
+      - .env.local
     environment:
       - NODE_ENV=production
-      # if you have .env.local, uncomment below line
-      # - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - PORT=3000
     restart: unless-stopped
